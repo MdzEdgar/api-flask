@@ -16,6 +16,14 @@ class Task(db.Model):
     def __str__(self):
         return self.title
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'deadline': self.deadline
+        }
+
 
 def insert_tasks(*args, **kwargs):
     db.session.add(
@@ -27,4 +35,4 @@ def insert_tasks(*args, **kwargs):
     db.session.commit()
 
 
-listen(Task.__table__, 'after_create', insert_tasks)   
+listen(Task.__table__, 'after_create', insert_tasks)
