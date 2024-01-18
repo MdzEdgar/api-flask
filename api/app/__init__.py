@@ -16,5 +16,6 @@ def create_app(environment):
     with app.app_context():
         db.init_app(app)
         db.create_all()
+        db.session.commit()
 
     return app

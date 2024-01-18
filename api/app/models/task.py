@@ -32,7 +32,6 @@ def insert_tasks(*args, **kwargs):
     db.session.add(
         Task(title='Tile 2', description='Description', deadline='2019-12-12 12:00:00')
     )
-    db.session.commit()
 
 
 listen(Task.__table__, 'after_create', insert_tasks)
