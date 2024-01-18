@@ -51,6 +51,12 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode('utf-8'))
         self.assertEqual(len(data['data']), 2)
 
+    def test_not_found(self):
+        new_path = self.path + '100'
+        response = self.client.get(path=new_path, content_type=self.content_type)
+
+        self.assertEqual(response.status_code, 404)
+
 
 if __name__ == '__main__':
     unittest.main()
