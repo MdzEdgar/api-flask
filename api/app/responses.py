@@ -1,6 +1,17 @@
 from flask import jsonify
 
 
+def bad_request():
+    return jsonify(
+        {
+            'success': False,
+            'data': {},
+            'message': 'Bad request',
+            'code': 400
+        }
+    ), 400
+
+
 def not_found():
     return jsonify(
         {

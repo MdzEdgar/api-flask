@@ -1,8 +1,10 @@
+from flask import request
 from flask import Blueprint
 
 from .models.task import Task
 from .responses import response
 from .responses import not_found
+from .responses import bad_request
 
 api_v1 = Blueprint('api', __name__, url_prefix='/api/v1')
 
@@ -28,7 +30,22 @@ def get_task(id):
 
 @api_v1.route('/tasks', methods=['POST'])
 def create_task():
-    pass
+    json = request.get_json(force=True)
+
+    if json.get('title') is None or len(json['title']) > 50:
+        return bad_request()
+
+    if json.get('description') is None:
+        return bad_request()
+
+    if json.get('deadline') is None:
+        return bad_request()
+
+    task = Task.new(json['title'], json['description'], json['deadline'])
+    if task.save():
+        return response(task.serialize())
+
+    return bad_request()
 
 
 @api_v1.route('/tasks/<id>', methods=['PUT'])
