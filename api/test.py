@@ -7,17 +7,24 @@ from config import config
 
 
 class TestAPI(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
+        super(TestAPI, cls).setUpClass()
         environment = config['test']
-        self.app = create_app(environment)
+        cls.app = create_app(environment)
+
+    @classmethod
+    def tearDownClass(cls):
+        with cls.app.app_context():
+            db.session.remove()
+            db.drop_all()
+
+    def setUp(self):
+        self.app = TestAPI.app
         self.client = self.app.test_client()
 
         self.content_type = 'application/json'
         self.path = 'http://127.0.0.1:5000/api/v1/tasks'
-
-    def tearDown(self):
-        with self.app.app_context():
-            db.drop_all()
 
     def test_one_equals_one(self):
         self.assertEqual(1, 1)
@@ -32,7 +39,7 @@ class TestAPI(unittest.TestCase):
         response = self.client.get(path=new_path, content_type=self.content_type)
         self.assertEqual(response.status_code, 200)
 
-        data = json.load(response.data.decode('utf-8'))
+        data = json.loads(response.data.decode('utf-8'))
         task_id = data['data']['id']
 
         self.assertEqual(task_id, 1)
