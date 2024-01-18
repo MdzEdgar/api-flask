@@ -44,18 +44,33 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(task_id, 1)
 
-    def test_length_tasks(self):
-        response = self.client.get(path=self.path)
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(len(data['data']), 2)
-
     def test_not_found(self):
         new_path = self.path + '100'
         response = self.client.get(path=new_path, content_type=self.content_type)
 
         self.assertEqual(response.status_code, 404)
+
+    def test_create_task(self):
+        data = {
+            'title': 'title', 'description': 'description',
+            'deadline': '2024-12-12 23:59:59'
+        }
+
+        response = self.client.post(path=self.path, data=json.dumps(data),
+                                    content_type=self.content_type)
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode('utf-8'))
+        task_id = data['data']['id']
+
+        self.assertEqual(task_id, 3)
+
+    def test_length_tasks(self):
+        response = self.client.get(path=self.path)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(len(data['data']), 3)
 
 
 if __name__ == '__main__':
