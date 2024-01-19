@@ -68,5 +68,13 @@ def update_task(id):
 
 
 @api_v1.route('/tasks/<id>', methods=['DELETE'])
-def delete_tasks():
-    pass
+def delete_tasks(id):
+    task = Task.query.filter_by(id=id).first()
+
+    if task is None:
+        return not_found()
+
+    if task.delete():
+        return response(task.serialize())
+
+    return bad_request()

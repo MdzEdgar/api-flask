@@ -1,12 +1,16 @@
 import json
 import unittest
 
+from sqlalchemy.util import cmp
+
 from app import db
 from app import create_app
 from config import config
 
 
 class TestAPI(unittest.TestCase):
+    # unittest.TestLoader.sortTestMethodsUsing = lambda self, a, b: cmp(a, b) * -1
+
     @classmethod
     def setUpClass(cls):
         super(TestAPI, cls).setUpClass()
@@ -45,7 +49,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(task_id, 1)
 
     def test_not_found(self):
-        new_path = self.path + '100'
+        new_path = self.path + '/100'
         response = self.client.get(path=new_path, content_type=self.content_type)
 
         self.assertEqual(response.status_code, 404)
@@ -65,13 +69,6 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(task_id, 3)
 
-    def test_length_tasks(self):
-        response = self.client.get(path=self.path)
-        self.assertEqual(response.status_code, 200)
-
-        data = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(len(data['data']), 3)
-
     def test_update_task(self):
         data = {'title': 'Nuevo titulo'}
 
@@ -83,6 +80,23 @@ class TestAPI(unittest.TestCase):
         title = data['data']['title']
 
         self.assertEqual(title, 'Nuevo titulo')
+
+    def test_delete_task(self):
+        new_path = self.path + '/3'
+
+        response = self.client.delete(path=new_path, content_type=self.content_type)
+
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(path=new_path, content_type=self.content_type)
+        self.assertEqual(response.status_code, 404)
+
+    def test_length_tasks(self):
+        response = self.client.get(path=self.path)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(len(data['data']), 2)
 
 
 if __name__ == '__main__':
