@@ -1,5 +1,6 @@
 from flask import request
 from flask import Blueprint
+from flask import current_app
 
 from .models.task import Task
 from .responses import response
@@ -7,6 +8,21 @@ from .responses import not_found
 from .responses import bad_request
 
 api_v1 = Blueprint('api', __name__, url_prefix='/api/v1')
+
+
+def set_task(function):
+    def wrap(*args, **kwargs):
+        with current_app.app_context():
+            id = kwargs.get('id', 0)
+            task = Task.query.filter_by(id=id).first()
+
+            if task is None:
+                return not_found()
+
+            return function(task)
+
+    wrap.__name__ = function.__name__
+    return wrap()
 
 
 @api_v1.route('/tasks', methods=['GET'])
@@ -22,12 +38,8 @@ def get_tasks():
 
 
 @api_v1.route('/tasks/<id>', methods=['GET'])
-def get_task(id):
-    task = Task.query.filter_by(id=id).first()
-
-    if task is None:
-        return not_found()
-
+@set_task
+def get_task(task):
     return response(task.serialize())
 
 

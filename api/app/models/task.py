@@ -1,6 +1,6 @@
 from . import db
 
-from sqlalchemy import desc,asc
+from sqlalchemy import desc, asc
 from sqlalchemy.event import listen
 
 
