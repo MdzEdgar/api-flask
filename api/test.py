@@ -1,8 +1,6 @@
 import json
 import unittest
 
-from sqlalchemy.util import cmp
-
 from app import db
 from app import create_app
 from config import config
