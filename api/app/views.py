@@ -21,7 +21,7 @@ def set_task(function):
         return function(task)
 
     wrap.__name__ = function.__name__
-    return wrap()
+    return wrap
 
 
 @api_v1.route('/tasks', methods=['GET'])
