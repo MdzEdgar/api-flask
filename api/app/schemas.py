@@ -1,4 +1,5 @@
-from marshmallow import Schema
+from marshmallow import Schema, fields
+from marshmallow.validate import Length
 
 
 class TaskSchema(Schema):
@@ -6,5 +7,13 @@ class TaskSchema(Schema):
         fields = ('id', 'title', 'description', 'deadline')
 
 
+class ParamsTasksSchema(Schema):
+    title = fields.Str(required=True, validate=Length(max=50))
+    description = fields.Str(required=True, validate=Length(max=200))
+    deadline = fields.DateTime(required=True)
+
+
 task_schema = TaskSchema()
 tasks_schema = TaskSchema(many=True)
+
+params_task_schema = ParamsTasksSchema()
